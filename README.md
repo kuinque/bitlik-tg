@@ -1,53 +1,98 @@
-# Telegram Web App
+# Bitlik Telegram Wallet
 
-A simple Telegram Web App built with Python Flask and python-telegram-bot.
+A Telegram web app that provides wallet functionality, allowing users to view their balance, send and receive money, and track transactions.
 
-## Setup
-
-1. Create a new Telegram bot using [@BotFather](https://t.me/botfather) and get your bot token.
-
-2. Create a `.env` file in the root directory and add your bot token:
+## Project Structure
 ```
-TELEGRAM_BOT_TOKEN=your_bot_token_here
-```
-
-3. Install the required dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-4. Run the application:
-```bash
-python app.py
+bitlik-tg/
+├── app.py                 # Main file with Flask and Telegram bot
+├── requirements.txt       # Project dependencies
+├── .env                  # Environment variables (bot token)
+└── src/
+    ├── static/
+    │   ├── css/
+    │   │   └── style.css    # Web interface styles
+    │   └── js/
+    │       └── app.js       # Frontend JavaScript
+    └── templates/
+        └── index.html       # Web app HTML template
 ```
 
 ## Features
-
-- Basic Flask web application
 - Telegram bot integration
-- Web App template with Telegram Web App SDK
-- Environment variable configuration
-- Example API endpoint
+- Web-based wallet interface
+- Balance display
+- Send and receive money functionality
+- Transaction history
+- Real-time updates
 
-## Development
+## Technical Stack
+- Python 3.7+
+- Flask (Web Framework)
+- python-telegram-bot (Telegram Bot API)
+- HTML/CSS/JavaScript (Frontend)
 
-The application consists of:
-- `app.py`: Main application file
-- `templates/index.html`: Web App template
-- `requirements.txt`: Python dependencies
-- `.env`: Environment variables (create this file)
+## Setup Instructions
 
-## Web App Integration
+1. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-To integrate this with Telegram:
+2. **Configure Environment**
+   - Create a `.env` file in the project root
+   - Add your Telegram bot token:
+     ```
+     TELEGRAM_BOT_TOKEN=your_bot_token_here
+     ```
 
-1. Create a new bot using [@BotFather](https://t.me/botfather)
-2. Use the `/newapp` command to create a new Web App
-3. Set the Web App URL to your deployed application URL
-4. Update the Web App URL in `app.py` with your actual URL
+3. **Set Up Telegram Bot**
+   - Create a new bot using [@BotFather](https://t.me/BotFather)
+   - Get the bot token and add it to `.env`
+   - Set up the web app URL using `/setwebapp` command
 
-## Security Notes
+4. **Configure ngrok (for development)**
+   - Install ngrok from [ngrok.com](https://ngrok.com)
+   - Run ngrok to create a tunnel:
+     ```bash
+     ngrok http 7341
+     ```
+   - Use the provided HTTPS URL as your web app URL in BotFather
 
-- Never commit your `.env` file
-- Keep your bot token secure
-- Use HTTPS in production 
+5. **Run the Application**
+   ```bash
+   python app.py
+   ```
+
+## API Endpoints
+
+- `GET /api/balance` - Get user's balance
+- `GET /api/transactions` - Get transaction history
+- `POST /api/send` - Send money to another user
+- `POST /api/receive` - Receive money from another user
+
+## Development Status
+
+### Current Features
+- Basic wallet interface
+- Balance display
+- Transaction history view
+- Send/Receive money UI
+
+### Limitations
+- Using mock data (no database integration)
+- Basic error handling
+- No user authentication
+- Limited transaction validation
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 
