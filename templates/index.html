@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Web App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: var(--tg-theme-hint-color, #999999);
+        }
+        button {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Telegram Web App!</h1>
+        <p>This is a basic template for your Telegram Web App.</p>
+        <button onclick="sendData()">Send Data to Bot</button>
+    </div>
+    <script>
+        // Initialize Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Function to send data back to the bot
+        function sendData() {
+            tg.sendData(JSON.stringify({
+                message: "Hello from Web App!",
+                timestamp: new Date().toISOString()
+            }));
+        }
+
+        // Handle data received from the bot
+        tg.onEvent('mainButtonClicked', function() {
+            tg.sendData(JSON.stringify({
+                message: "Main button clicked!",
+                timestamp: new Date().toISOString()
+            }));
+        });
+    </script>
+</body>
+</html>
+        

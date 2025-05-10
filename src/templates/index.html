@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitlik Wallet</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bitlik Wallet</h1>
+        </header>
+
+        <main>
+            <section class="balance-card">
+                <h2>Your Balance</h2>
+                <div class="balance-amount" id="balance">Loading...</div>
+            </section>
+
+            <section class="actions">
+                <button class="action-button" onclick="showSendMoney()">
+                    <span class="action-icon">📤</span>
+                    Send
+                </button>
+                <button class="action-button" onclick="showReceiveMoney()">
+                    <span class="action-icon">📥</span>
+                    Receive
+                </button>
+            </section>
+
+            <section class="transactions">
+                <h2>Recent Transactions</h2>
+                <div id="transactions-list" class="transactions-list">
+                    <!-- Transactions will be loaded here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html> 
