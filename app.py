@@ -6,15 +6,15 @@ import os
 from dotenv import load_dotenv
 import threading
 import asyncio
+from config.config import TELEGRAM_BOT_TOKEN, FLASK_HOST, FLASK_PORT
+from src.api.wallet_routes import wallet_bp  # new import for wallet routes
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Initialize Flask application
 app = Flask(__name__)
-
-# Get Telegram Bot Token from environment variables
-TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+app.register_blueprint(wallet_bp, url_prefix='/api')  # register wallet routes
 
 # Mock user data (to be replaced with database in production)
 MOCK_USER_DATA = {
@@ -40,22 +40,21 @@ MOCK_USER_DATA = {
     ]
 }
 
+# Telegram bot command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Handle the /start command in Telegram.
     Sends a welcome message with a button to open the web app.
     """
-    # Get the current URL from the request
+    # Get the current URL and include user ID
     webapp_url = request.host_url.rstrip('/')
-    
+    user_id = update.effective_user.id
+    app_url = f"{webapp_url}/?user_id={user_id}"
     await update.message.reply_text(
         "Welcome to Telegram Wallet! Click the button below to open your wallet:",
         reply_markup={
             "inline_keyboard": [[
-                {
-                    "text": "Open Wallet",
-                    "web_app": WebAppInfo(url=f"{webapp_url}")
-                }
+                {"text": "Open Wallet", "web_app": WebAppInfo(url=app_url)}
             ]]
         }
     )
@@ -65,22 +64,9 @@ def index():
     """Render the main page of the web app."""
     return render_template('index.html')
 
-@app.route('/api/balance', methods=['GET'])
-def get_balance():
-    """Get user's balance."""
-    return jsonify({
-        "balance": MOCK_USER_DATA["balance"],
-        "currency": MOCK_USER_DATA["currency"]
-    })
-
-@app.route('/api/transactions', methods=['GET'])
-def get_transactions():
-    """Get user's transactions."""
-    return jsonify(MOCK_USER_DATA["transactions"])
-
 def run_flask():
     """Run the Flask application in a separate thread."""
-    app.run(host='0.0.0.0', port=7341)
+    app.run(host=FLASK_HOST, port=FLASK_PORT)
 
 async def run_bot():
     """
@@ -104,4 +90,4 @@ if __name__ == '__main__':
     flask_thread.start()
     
     # Run the Telegram bot in the main thread
-    asyncio.run(run_bot()) 
+    asyncio.run(run_bot())

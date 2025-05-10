@@ -4,15 +4,25 @@ from config.config import MOCK_USER_DATA
 
 class WalletService:
     def __init__(self):
-        self._wallet = Wallet.from_dict(MOCK_USER_DATA)
+        # Store initial mock data and per-user wallets state
+        self._initial_data = MOCK_USER_DATA
+        self._wallets: Dict[str, Wallet] = {}
 
-    def get_balance(self) -> Dict[str, Any]:
+    def _get_wallet(self, user_id: str) -> Wallet:
+        # Lazily initialize a wallet for each user
+        if user_id not in self._wallets:
+            self._wallets[user_id] = Wallet.from_dict(self._initial_data)
+        return self._wallets[user_id]
+
+    def get_balance(self, user_id: str) -> Dict[str, Any]:
+        wallet = self._get_wallet(user_id)
         return {
-            "balance": self._wallet.balance,
-            "currency": self._wallet.currency
+            "balance": wallet.balance,
+            "currency": wallet.currency
         }
 
-    def get_transactions(self) -> List[Dict[str, Any]]:
+    def get_transactions(self, user_id: str) -> List[Dict[str, Any]]:
+        wallet = self._get_wallet(user_id)
         return [
             {
                 "id": t.id,
@@ -23,17 +33,17 @@ class WalletService:
                 "date": t.date.isoformat(),
                 "status": t.status
             }
-            for t in self._wallet.transactions
+            for t in wallet.transactions
         ]
 
-    def send_money(self, amount: float, to_user: str) -> bool:
-        if amount > self._wallet.balance:
+    def send_money(self, user_id: str, amount: float, to_user: str) -> bool:
+        wallet = self._get_wallet(user_id)
+        if amount > wallet.balance:
             return False
-        
-        self._wallet.balance -= amount
-        self._wallet.transactions.append(
+        wallet.balance -= amount
+        wallet.transactions.append(
             Transaction(
-                id=len(self._wallet.transactions) + 1,
+                id=len(wallet.transactions) + 1,
                 type="send",
                 amount=amount,
                 to_user=to_user
@@ -41,13 +51,14 @@ class WalletService:
         )
         return True
 
-    def receive_money(self, amount: float, from_user: str) -> None:
-        self._wallet.balance += amount
-        self._wallet.transactions.append(
+    def receive_money(self, user_id: str, amount: float, from_user: str) -> None:
+        wallet = self._get_wallet(user_id)
+        wallet.balance += amount
+        wallet.transactions.append(
             Transaction(
-                id=len(self._wallet.transactions) + 1,
+                id=len(wallet.transactions) + 1,
                 type="receive",
                 amount=amount,
                 from_user=from_user
             )
-        ) 
+        )
