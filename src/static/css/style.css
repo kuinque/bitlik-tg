@@ -26,50 +26,83 @@ body {
     padding: 20px 0;
 }
 
-.balance-card {
-    background: linear-gradient(135deg, #2481cc, #1a5f8a);
-    border-radius: 16px;
-    padding: 24px;
-    color: white;
+.wallet-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.balance-card-modern {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #2481cc 60%, #1a5f8a 100%);
+    color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(36,129,204,0.10);
+    padding: 20px 28px;
     margin-bottom: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 350px;
 }
 
-.balance-amount {
-    font-size: 32px;
-    font-weight: bold;
-    margin: 8px 0;
-}
-
-.balance-label {
-    font-size: 14px;
-    opacity: 0.8;
-}
-
-.action-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
-}
-
-.action-button {
-    background-color: var(--tg-theme-button-color);
-    color: var(--tg-theme-button-text-color);
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
+.balance-icon {
+    margin-right: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
 }
 
-.action-button:hover {
-    opacity: 0.9;
+.balance-label-modern {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-bottom: 2px;
+}
+
+.balance-amount-modern {
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.wallet-actions {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 32px;
+}
+
+.wallet-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: none;
+    background: #f5f7fa;
+    color: #2481cc;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(36,129,204,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    gap: 6px;
+}
+
+.wallet-action-btn.send {
+    background: #eaf4ff;
+    color: #2481cc;
+}
+
+.wallet-action-btn.receive {
+    background: #eafff1;
+    color: #1abc9c;
+}
+
+.wallet-action-btn:hover {
+    box-shadow: 0 4px 16px rgba(36,129,204,0.15);
+    filter: brightness(0.98);
 }
 
 .transactions {
@@ -122,4 +155,185 @@ body {
     width: 24px;
     height: 24px;
     margin-right: 8px;
+}
+
+.tab-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: #fff;
+    border-top: 1px solid #eee;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    z-index: 100;
+}
+
+.tab {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 8px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #aaa;
+    font-size: 12px;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+.tab .tab-icon {
+    margin-bottom: 2px;
+    font-size: 22px;
+}
+
+.tab.active {
+    color: #222;
+    font-weight: bold;
+    background: #f3f3f3;
+    border-radius: 16px 16px 0 0;
+}
+
+.tab.active .tab-icon {
+    color: #222;
+}
+
+#main-content {
+    padding-bottom: 70px; /* space for tab bar */
+}
+
+.segmented-control {
+    display: flex;
+    background: #f3f3f6;
+    border-radius: 24px;
+    padding: 4px;
+    margin: 0 auto 16px auto;
+    width: 320px;
+    max-width: 95vw;
+    margin-top: 18px;
+    box-sizing: border-box;
+}
+
+.segmented-control .segment {
+    flex: 1;
+    border: none;
+    background: none;
+    color: #222;
+    font-size: 17px;
+    font-weight: 500;
+    padding: 10px 0;
+    border-radius: 20px;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+}
+
+.segmented-control .segment.active {
+    background: #fff;
+    color: #111;
+    box-shadow: 0 2px 8px rgba(36,129,204,0.04);
+}
+
+.cex-soon {
+    text-align: center;
+    margin-top: 48px;
+    color: #888;
+}
+
+.cex-soon h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.wallet-feature-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    margin: 32px 0 24px 0;
+    width: 100%;
+    max-width: 700px;
+}
+
+.wallet-feature-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(36,129,204,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 22vw;
+    min-width: 70px;
+    max-width: 120px;
+    padding: 18px 8px 12px 8px;
+    cursor: pointer;
+    transition: box-shadow 0.18s, transform 0.18s;
+}
+
+.wallet-feature-card:hover {
+    box-shadow: 0 4px 16px rgba(36,129,204,0.13);
+    transform: translateY(-2px) scale(1.03);
+}
+
+.wallet-feature-icon {
+    background: #eaf4ff;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.wallet-feature-label {
+    color: #2476d3;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 2px;
+}
+
+.balance-card-modern-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg, #4a90e2 0%, #3576c9 100%);
+    color: #fff;
+    border-radius: 36px;
+    box-shadow: 0 8px 32px rgba(36,129,204,0.10);
+    padding: 32px 36px 32px 36px;
+    margin: 0 auto 36px auto;
+    width: 100%;
+    max-width: 600px;
+    min-width: 260px;
+    flex-wrap: wrap;
+}
+
+.balance-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 28px;
+}
+
+.balance-card-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.balance-label-modern {
+    font-size: 20px;
+    opacity: 0.95;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.balance-amount-modern {
+    font-size: 38px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    line-height: 1.1;
 } 

@@ -8,36 +8,40 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Bitlik Wallet</h1>
-        </header>
+    <main id="main-content">
+        <!-- Wallet content will be loaded here by default -->
+    </main>
 
-        <main>
-            <section class="balance-card">
-                <h2>Your Balance</h2>
-                <div class="balance-amount" id="balance">Loading...</div>
-            </section>
-
-            <section class="actions">
-                <button class="action-button" onclick="showSendMoney()">
-                    <span class="action-icon">📤</span>
-                    Send
-                </button>
-                <button class="action-button" onclick="showReceiveMoney()">
-                    <span class="action-icon">📥</span>
-                    Receive
-                </button>
-            </section>
-
-            <section class="transactions">
-                <h2>Recent Transactions</h2>
-                <div id="transactions-list" class="transactions-list">
-                    <!-- Transactions will be loaded here -->
-                </div>
-            </section>
-        </main>
-    </div>
+    <nav class="tab-bar">
+        <button class="tab active" data-tab="wallet">
+            <span class="tab-icon">
+                <!-- Wallet SVG -->
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="4"/><circle cx="18" cy="14" r="2"/></svg>
+            </span>
+            <span class="tab-label">Wallet</span>
+        </button>
+        <button class="tab" data-tab="trade">
+            <span class="tab-icon">
+                <!-- Trade SVG -->
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+            </span>
+            <span class="tab-label">Trade</span>
+        </button>
+        <button class="tab" data-tab="earn">
+            <span class="tab-icon">
+                <!-- Earn SVG -->
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="4"/></svg>
+            </span>
+            <span class="tab-label">Earn</span>
+        </button>
+        <button class="tab" data-tab="history">
+            <span class="tab-icon">
+                <!-- History SVG -->
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </span>
+            <span class="tab-label">History</span>
+        </button>
+    </nav>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>

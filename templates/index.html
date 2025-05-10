@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,6 +11,7 @@
             padding: 20px;
             background-color: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
+            padding-bottom: 90px; /* space for nav */
         }
         .container {
             max-width: 600px;
@@ -32,14 +32,89 @@
         button:hover {
             opacity: 0.9;
         }
+        .bottom-nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 70px;
+            background: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            outline: none;
+            flex: 1;
+            padding: 8px 0 0 0;
+            font-size: 16px;
+            color: #888;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .tab-btn.active {
+            color: #2481cc;
+            font-weight: bold;
+        }
+        .tab-btn span {
+            font-size: 28px;
+            margin-bottom: 2px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to Telegram Web App!</h1>
-        <p>This is a basic template for your Telegram Web App.</p>
-        <button onclick="sendData()">Send Data to Bot</button>
+    <div class="container" id="tab-content-wallet">
+        <h1 style="font-weight: bold;">Bitlik Wallet</h1>
+        <div id="balance-card" style="background: linear-gradient(90deg, #2383c4 0%, #186fa7 100%); color: #fff; border-radius: 20px; padding: 32px 32px 24px 32px; margin-bottom: 32px;">
+            <div style="font-size: 1.4rem; font-weight: bold; margin-bottom: 10px;">Your Balance</div>
+            <div id="wallet-balance" style="font-size: 2.5rem; font-weight: bold;">USD 0.00</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;">
+            <button id="send-btn" style="display: flex; align-items: center; gap: 8px; background: #2383c4; color: #fff; border-radius: 12px; font-size: 1.1rem; padding: 12px 24px; border: none; width: 140px; font-weight: 600;">
+                <span>📤</span> Send
+            </button>
+            <button id="receive-btn" style="display: flex; align-items: center; gap: 8px; background: #2383c4; color: #fff; border-radius: 12px; font-size: 1.1rem; padding: 12px 24px; border: none; width: 140px; font-weight: 600;">
+                <span>📥</span> Receive
+            </button>
+        </div>
+        <div style="margin-top: 24px;">
+            <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 16px;">Recent Transactions</div>
+            <div id="transactions-list"></div>
+        </div>
     </div>
+    <div class="container" id="tab-content-trade" style="display:none;">
+        <h1>Trade</h1>
+        <p>Trading functionality coming soon.</p>
+    </div>
+    <div class="container" id="tab-content-earn" style="display:none;">
+        <h1>Earn</h1>
+        <p>Earn rewards here in the future.</p>
+    </div>
+    <div class="container" id="tab-content-history" style="display:none;">
+        <h1>History</h1>
+        <p>View your transaction history here.</p>
+    </div>
+    <nav class="bottom-nav" role="tablist" aria-label="Main navigation">
+        <button class="tab-btn active" data-tab="wallet" role="tab" aria-selected="true" aria-controls="tab-content-wallet" tabindex="0">
+            <span aria-hidden="true">💼</span><br>Wallet
+        </button>
+        <button class="tab-btn" data-tab="trade" role="tab" aria-selected="false" aria-controls="tab-content-trade" tabindex="-1">
+            <span aria-hidden="true">📈</span><br>Trade
+        </button>
+        <button class="tab-btn" data-tab="earn" role="tab" aria-selected="false" aria-controls="tab-content-earn" tabindex="-1">
+            <span aria-hidden="true">💰</span><br>Earn
+        </button>
+        <button class="tab-btn" data-tab="history" role="tab" aria-selected="false" aria-controls="tab-content-history" tabindex="-1">
+            <span aria-hidden="true">🕒</span><br>History
+        </button>
+    </nav>
     <script>
         // Initialize Telegram WebApp
         const tg = window.Telegram.WebApp;
@@ -60,6 +135,91 @@
                 timestamp: new Date().toISOString()
             }));
         });
+
+        // Improved tab switching logic for accessibility and maintainability
+        function switchTab(tabKey) {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = {
+                wallet: document.getElementById('tab-content-wallet'),
+                trade: document.getElementById('tab-content-trade'),
+                earn: document.getElementById('tab-content-earn'),
+                history: document.getElementById('tab-content-history')
+            };
+            tabButtons.forEach(btn => {
+                const isActive = btn.dataset.tab === tabKey;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive);
+                btn.setAttribute('tabindex', isActive ? '0' : '-1');
+            });
+            Object.keys(tabContents).forEach(key => {
+                tabContents[key].style.display = (tabKey === key) ? '' : 'none';
+            });
+        }
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    switchTab(btn.dataset.tab);
+                }
+            });
+        });
+
+        // Fetch and render wallet balance and transactions
+        async function loadWalletData() {
+            // Show loading state
+            document.getElementById('wallet-balance').textContent = 'Loading...';
+            const txList = document.getElementById('transactions-list');
+            txList.innerHTML = '<div style="color:#888;">Loading...</div>';
+
+            try {
+                // Fetch balance
+                const balanceRes = await fetch('/api/balance');
+                const balanceData = await balanceRes.json();
+                const currency = balanceData.currency || 'N/A';
+                const balance = typeof balanceData.balance === 'number' ? balanceData.balance.toFixed(2) : 'N/A';
+                document.getElementById('wallet-balance').textContent = `${currency} ${balance}`;
+
+                // Fetch transactions
+                const txRes = await fetch('/api/transactions');
+                const txData = await txRes.json();
+                txList.innerHTML = '';
+                if (!Array.isArray(txData) || txData.length === 0) {
+                    txList.innerHTML = '<div style="color: #888;">No transactions yet.</div>';
+                    return;
+                }
+                txData.forEach(tx => {
+                    const isReceive = tx.type === 'receive';
+                    const sign = isReceive ? '+' : '-';
+                    const color = isReceive ? '#2ecc40' : '#ff4136';
+                    const name = isReceive ? `Received from ${tx.from || 'N/A'}` : `Sent to ${tx.to || 'N/A'}`;
+                    const date = tx.date ? new Date(tx.date).toLocaleDateString('en-GB') : 'N/A';
+                    const amount = `${sign}${currency} ${typeof tx.amount === 'number' ? tx.amount.toFixed(2) : 'N/A'}`;
+                    const txDiv = document.createElement('div');
+                    txDiv.style.display = 'flex';
+                    txDiv.style.justifyContent = 'space-between';
+                    txDiv.style.alignItems = 'center';
+                    txDiv.style.padding = '10px 0 6px 0';
+                    txDiv.style.borderBottom = '1px solid #eee';
+                    txDiv.innerHTML = `
+                        <div>
+                            <div style=\"font-size: 1.05rem;\">${name}</div>
+                            <div style=\"font-size: 0.95rem; color: #888;\">${date}</div>
+                        </div>
+                        <div style=\"font-size: 1.1rem; font-weight: 600; color: ${color};\">${amount}</div>
+                    `;
+                    txList.appendChild(txDiv);
+                });
+            } catch (error) {
+                document.getElementById('wallet-balance').textContent = 'Error loading balance';
+                txList.innerHTML = '<div style="color: #ff4136;">Error loading transactions</div>';
+            }
+        }
+        // Load wallet data on page load
+        if (document.getElementById('tab-content-wallet').style.display !== 'none') {
+            loadWalletData();
+        }
+        // Reload wallet data when switching to Wallet tab
+        document.querySelector('[data-tab="wallet"]').addEventListener('click', loadWalletData);
     </script>
 </body>
 </html>
