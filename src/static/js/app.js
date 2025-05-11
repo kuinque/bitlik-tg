@@ -189,7 +189,7 @@ function renderTradeTab() {
             filtered = [...coins].sort((a, b) => a.price_change_percentage_24h - b.price_change_percentage_24h).slice(0, 8);
         }
         const list = filtered.map(coin => `
-            <div class="trade-coin">
+            <div class="trade-coin" data-coin='${JSON.stringify(coin)}'>
                 <img class="trade-coin-icon" src="${coin.image}" alt="${coin.symbol}">
                 <div class="trade-coin-info">
                     <div class="trade-coin-title">${coin.name}</div>
@@ -202,6 +202,13 @@ function renderTradeTab() {
             </div>
         `).join('');
         document.getElementById('trade-list').innerHTML = list;
+        // Добавляем обработчик клика на монету
+        document.querySelectorAll('.trade-coin').forEach(el => {
+            el.addEventListener('click', function() {
+                const coin = JSON.parse(this.getAttribute('data-coin'));
+                renderCoinDetails(coin);
+            });
+        });
     }
 
     document.querySelectorAll('.trade-tab').forEach(tab => {
@@ -212,6 +219,70 @@ function renderTradeTab() {
             renderCoinsList();
         });
     });
+}
+
+// Страница подробностей монеты
+function renderCoinDetails(coin) {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="coin-details-card">
+            <button class="back-btn">← Back</button>
+            <div class="coin-header">
+                <img class="coin-details-icon" src="${coin.image}" alt="${coin.symbol}">
+                <div>
+                    <div class="coin-details-title">${coin.name}</div>
+                    <div class="coin-details-ticker">${coin.symbol.toUpperCase()}</div>
+                </div>
+                <div class="coin-details-price-block">
+                    <div class="coin-details-price">$${coin.current_price.toLocaleString()}</div>
+                    <div class="coin-details-change ${coin.price_change_percentage_24h >= 0 ? 'positive' : 'negative'}">
+                        ${coin.price_change_percentage_24h >= 0 ? '+' : ''}${coin.price_change_percentage_24h.toFixed(2)}%
+                    </div>
+                </div>
+            </div>
+            <div class="coin-chart-card">
+                <canvas id="coinChart" height="120"></canvas>
+                <div class="chart-range-tabs">
+                    <button data-range="1D" class="active">1D</button>
+                    <button data-range="1W">1W</button>
+                    <button data-range="1M">1M</button>
+                    <button data-range="1Y">1Y</button>
+                    <button data-range="ALL">All</button>
+                </div>
+            </div>
+            <div class="coin-balance-block">
+                <div class="coin-balance-label">Your ${coin.symbol.toUpperCase()} Balance</div>
+                <div class="coin-balance-amount" id="coin-balance">Loading...</div>
+            </div>
+            <div class="coin-details-actions">
+                <button class="buy-btn">Buy</button>
+                <button class="sell-btn">Sell</button>
+            </div>
+            <div class="coin-about-block">
+                <div class="coin-about-title">About</div>
+                <div class="coin-about-desc" id="coin-about">Loading...</div>
+            </div>
+        </div>
+    `;
+    // Назад
+    document.querySelector('.back-btn').addEventListener('click', () => renderTradeTab());
+    // График
+    document.querySelectorAll('.chart-range-tabs button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.chart-range-tabs button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            loadCoinChartData(coin.id, this.dataset.range);
+        });
+    });
+    loadCoinChartData(coin.id, '1D');
+    // Баланс (заглушка, можно заменить на реальный запрос)
+    document.getElementById('coin-balance').textContent = '$0.00 (0 ' + coin.symbol.toUpperCase() + ')';
+    // Описание
+    fetch(`https://api.coingecko.com/api/v3/coins/${coin.id}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('coin-about').textContent = data.description.en ? data.description.en.split('. ')[0] + '.' : 'No description.';
+        });
 }
 
 function renderHistoryTab() {
@@ -340,6 +411,12 @@ async function loadCoinChartData(coinId = 'bitcoin', range = '1D') {
 }
 
 function renderCoinChart(prices, labels) {
+    // Для диапазона All: уменьшаем количество точек (например, до 120)
+    if (prices.length > 120) {
+        const step = Math.ceil(prices.length / 120);
+        prices = prices.filter((_, i) => i % step === 0);
+        labels = labels.filter((_, i) => i % step === 0);
+    }
     const ctx = document.getElementById('coinChart').getContext('2d');
     if (coinChart) coinChart.destroy();
     coinChart = new Chart(ctx, {
@@ -348,23 +425,25 @@ function renderCoinChart(prices, labels) {
             labels: labels,
             datasets: [{
                 data: prices,
-                borderColor: '#34C759',
-                backgroundColor: 'rgba(52,199,89,0.08)',
+                borderColor: '#3390EC',
+                backgroundColor: 'rgba(51,144,236,0.10)',
                 pointRadius: 0,
-                borderWidth: 2,
+                borderWidth: 2.5,
                 fill: true,
-                tension: 0.3,
+                tension: 0.35,
             }]
         },
         options: {
             plugins: { legend: { display: false } },
             scales: {
-                x: { display: false },
-                y: { display: false }
+                x: { display: false, grid: { display: false } },
+                y: { display: false, grid: { display: false } }
             },
             elements: { line: { borderCapStyle: 'round' } },
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            layout: { padding: { left: 0, right: 0, top: 0, bottom: 36 } },
+            backgroundColor: '#23242a',
         }
     });
 }

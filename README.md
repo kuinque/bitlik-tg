@@ -1,98 +1,119 @@
-# Bitlik Telegram Wallet
+# Bitlik Telegram WebApp Wallet
 
-A Telegram web app that provides wallet functionality, allowing users to view their balance, send and receive money, and track transactions.
+Современный крипто-кошелек для Telegram Web Apps с поддержкой мультивалютности, графиков, истории транзакций и стильным интерфейсом в духе TON/Telegram Wallet.
 
-## Project Structure
+## 🚀 Возможности
+
+- **Мобильный и десктопный UI** в стиле Telegram/TON Wallet (светлая и тёмная тема)
+- **Графики цен** (Chart.js, данные с CoinGecko, диапазоны 1D/1W/1M/1Y/All)
+- **Мультивалютный баланс** и история транзакций
+- **Действия**: Отправка, Пополнение, Обмен, P2P
+- **Интеграция с Telegram Bot** (python-telegram-bot)
+- **Бэкенд на Flask** с REST API
+- **Адаптивная верстка** и плавные анимации
+- **Красивая страница монеты** с графиком, ценой, описанием и кнопками Buy/Sell
+
+## 🗂️ Структура проекта
+
 ```
-bitlik-tg/
-├── app.py                 # Main file with Flask and Telegram bot
-├── requirements.txt       # Project dependencies
-├── .env                  # Environment variables (bot token)
-└── src/
-    ├── static/
-    │   ├── css/
-    │   │   └── style.css    # Web interface styles
-    │   └── js/
-    │       └── app.js       # Frontend JavaScript
-    └── templates/
-        └── index.html       # Web app HTML template
+src/
+├── app.py                # Точка входа: Flask + Telegram Bot
+├── api/
+│   ├── coins_routes.py   # API для получения монет (CoinGecko)
+│   ├── wallet_routes.py  # API для баланса и транзакций
+│   └── ...
+├── models/
+│   └── wallet.py         # Модели пользователя, кошелька, транзакций
+├── services/
+│   └── wallet_service.py # Логика работы с балансом и транзакциями
+├── static/
+│   ├── css/              # Стили (wallet.css, tabs.css, ...)
+│   ├── js/               # Логика фронта (app.js)
+│   └── img/              # Иконки, изображения
+├── templates/
+│   └── index.html        # Главный шаблон (Telegram WebApp)
+└── ...
+requirements.txt          # Зависимости Python
 ```
 
-## Features
-- Telegram bot integration
-- Web-based wallet interface
-- Balance display
-- Send and receive money functionality
-- Transaction history
-- Real-time updates
+## ⚙️ Установка и запуск
 
-## Technical Stack
-- Python 3.7+
-- Flask (Web Framework)
-- python-telegram-bot (Telegram Bot API)
-- HTML/CSS/JavaScript (Frontend)
+1. **Клонируй репозиторий и перейди в папку:**
+   ```bash
+   git clone <repo-url>
+   cd bitlik-tg
+   ```
 
-## Setup Instructions
+2. **Создай и активируй виртуальное окружение:**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
-1. **Install Dependencies**
+3. **Установи зависимости:**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Configure Environment**
-   - Create a `.env` file in the project root
-   - Add your Telegram bot token:
-     ```
-     TELEGRAM_BOT_TOKEN=your_bot_token_here
-     ```
-
-3. **Set Up Telegram Bot**
-   - Create a new bot using [@BotFather](https://t.me/BotFather)
-   - Get the bot token and add it to `.env`
-   - Set up the web app URL using `/setwebapp` command
-
-4. **Configure ngrok (for development)**
-   - Install ngrok from [ngrok.com](https://ngrok.com)
-   - Run ngrok to create a tunnel:
-     ```bash
-     ngrok http 7341
-     ```
-   - Use the provided HTTPS URL as your web app URL in BotFather
-
-5. **Run the Application**
-   ```bash
-   python app.py
+4. **Создай файл `.env` и укажи токен Telegram-бота:**
+   ```
+   TELEGRAM_BOT_TOKEN=your_bot_token
+   FLASK_HOST=0.0.0.0
+   FLASK_PORT=8080
    ```
 
-## API Endpoints
+5. **Запусти приложение:**
+   ```bash
+   python src/app.py
+   ```
 
-- `GET /api/balance` - Get user's balance
-- `GET /api/transactions` - Get transaction history
-- `POST /api/send` - Send money to another user
-- `POST /api/receive` - Receive money from another user
+6. **(Для теста в Telegram WebApp) Прокинь порт через ngrok:**
+   ```bash
+   ngrok http 8080
+   ```
+   Используй выданный адрес в настройках Telegram-бота.
 
-## Development Status
+## 🖥️ Основные технологии
 
-### Current Features
-- Basic wallet interface
-- Balance display
-- Transaction history view
-- Send/Receive money UI
+- **Backend:** Python 3.11+, Flask, python-telegram-bot, requests
+- **Frontend:** HTML5, CSS3 (адаптив, dark mode), Chart.js, JS (vanilla)
+- **API данных:** CoinGecko (монеты, графики)
+- **Интеграция:** Telegram WebApp API
 
-### Limitations
-- Using mock data (no database integration)
-- Basic error handling
-- No user authentication
-- Limited transaction validation
+## 🧑‍💻 Краткое описание кода
 
-## Contributing
+- **src/app.py** — запускает Flask и Telegram-бота в отдельных потоках.
+- **src/api/coins_routes.py** — отдаёт список монет и графики с CoinGecko, с обработкой ошибок.
+- **src/static/js/app.js** — вся логика вкладок, рендера страниц, интеграция Chart.js, обработка кликов, динамика UI.
+- **src/static/css/wallet.css** — стилизация в стиле Telegram/TON Wallet, поддержка тёмной темы.
+- **src/templates/index.html** — основной шаблон, подключает все стили и скрипты.
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+## 📝 Особенности UI/UX
 
-## License
+- **График монеты**: плавная линия, фирменный синий цвет, диапазоны, не перекрывается табами.
+- **Страница монеты**: крупная цена, изменение, иконка, график, баланс, описание, кнопки Buy/Sell, кнопка "Back".
+- **Тёмная тема**: все элементы гармонируют, нет резких контрастов, плавные скругления и тени.
+- **Табы и действия**: всегда доступны внизу, не перекрывают контент.
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+## 🛠️ Как добавить свою монету или действие?
+
+- Для монет — данные берутся с CoinGecko, можно изменить API-запрос в `coins_routes.py`.
+- Для новых действий — добавь кнопку и обработчик в `app.js` и соответствующий endpoint во Flask.
+
+## 🐞 Отладка и поддержка
+
+- Все ошибки внешних API (CoinGecko) обрабатываются и не ломают фронт.
+- Для отладки смотри консоль браузера и логи Flask.
+- Если что-то не работает — проверь лимиты CoinGecko и корректность токена Telegram.
+
+## 📄 Лицензия
+
+MIT (или укажи свою)
+
+---
+
+**Проект легко расширяется и кастомизируется под любые нужды Telegram WebApp!**
+
+---
+
+Если нужно добавить раздел "FAQ", "Как деплоить на сервер", "Как подключить к настоящему блокчейну" — дай знать! 

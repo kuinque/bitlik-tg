@@ -174,4 +174,199 @@
 .chart-range-tabs button.active {
     background: #3390EC;
     color: #fff;
+}
+
+.coin-details-card {
+    background: #23242a;
+    border-radius: 18px;
+    padding: 18px 16px 24px 16px;
+    margin: 18px 0;
+    box-shadow: 0 2px 16px rgba(36,129,204,0.10);
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.coin-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+.coin-details-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #23242a;
+    object-fit: contain;
+    box-shadow: 0 2px 8px rgba(36,129,204,0.10);
+}
+
+.coin-details-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.coin-details-ticker {
+    font-size: 14px;
+    color: #8E8E93;
+    font-weight: 500;
+}
+
+.coin-details-price-block {
+    margin-left: auto;
+    text-align: right;
+}
+
+.coin-details-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.coin-details-change {
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.coin-details-change.positive {
+    color: #34C759;
+}
+
+.coin-details-change.negative {
+    color: #FF3B30;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #3390EC;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.coin-balance-block {
+    background: #181A20;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 18px 0 10px 0;
+    text-align: left;
+    box-shadow: 0 1px 4px rgba(36,129,204,0.04);
+}
+
+.coin-balance-label {
+    color: #8E8E93;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.coin-balance-amount {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.coin-details-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.buy-btn, .sell-btn {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+.buy-btn {
+    background: #3390EC;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(51,144,236,0.10);
+}
+
+.sell-btn {
+    background: #23242a;
+    color: #3390EC;
+    border: 1.5px solid #3390EC;
+}
+
+.coin-about-block {
+    margin-top: 10px;
+}
+
+.coin-about-title {
+    color: #8E8E93;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.coin-about-desc {
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.coin-details-card .coin-chart-card {
+    background: #23242a;
+    border-radius: 18px;
+    padding: 0 0 56px 0;
+    margin-bottom: 18px;
+    box-shadow: none;
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.coin-details-card .coin-chart-card canvas {
+    width: 100% !important;
+    height: 180px !important;
+    display: block;
+    margin: 0 auto;
+    background: #23242a;
+    border-radius: 18px 18px 0 0;
+    position: relative;
+    z-index: 1;
+}
+
+.coin-details-card .chart-range-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 12px 10px 12px;
+    padding-bottom: 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: none;
+    border-radius: 0 0 18px 18px;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+.chart-range-tabs button {
+    background: #2c2f36;
+    color: #8E8E93;
+    /* остальные стили остаются */
+}
+
+body, .main-bg {
+    background: #181A20;
+    color: #fff;
 } 

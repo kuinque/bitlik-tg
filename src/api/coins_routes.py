@@ -14,7 +14,15 @@ def get_coins():
         'sparkline': False
     }
     response = requests.get(url, params=params)
-    data = response.json()
+    try:
+        data = response.json()
+    except Exception:
+        return jsonify({'error': 'Invalid response from CoinGecko'}), 502
+
+    # Если data не список — ошибка
+    if not isinstance(data, list):
+        return jsonify({'error': 'CoinGecko API error', 'details': data}), 502
+
     coins = [{
         'id': c['id'],
         'name': c['name'],
