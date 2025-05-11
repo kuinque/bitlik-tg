@@ -1,0 +1,146 @@
+.wallet-section {
+    margin: 24px auto 0 auto;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wallet-balance {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.balance-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(51,144,236,0.18) 0%, rgba(51,144,236,0.10) 100%);
+    border-radius: 28px;
+    margin: 24px auto 32px auto;
+    padding: 32px 0 28px 0;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 4px 24px rgba(36,129,204,0.10);
+}
+
+.balance-label {
+    font-size: 18px;
+    color: #b0b0b0;
+    font-weight: 500;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.balance-amount {
+    font-size: 38px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(36,129,204,0.10);
+}
+
+.wallet-actions-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 24px;
+    width: 100%;
+    margin-top: 18px;
+}
+
+.trade-section {
+    margin: 32px auto 0 auto;
+    max-width: 420px;
+    padding: 0 16px;
+    color: #fff;
+}
+
+.trade-tabs {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.trade-tab {
+    background: none;
+    border: none;
+    color: #8E8E93;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 0;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.18s, border-color 0.18s;
+}
+
+.trade-tab.active {
+    color: #3390EC;
+    border-bottom: 2px solid #3390EC;
+}
+
+.trade-list {
+    background: #181A20;
+    border-radius: 14px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.trade-coin {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid #23242a;
+}
+
+.trade-coin:last-child {
+    border-bottom: none;
+}
+
+.trade-coin-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 14px;
+    background: #23242a;
+    object-fit: contain;
+}
+
+.trade-coin-info {
+    flex: 1;
+}
+
+.trade-coin-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+}
+
+.trade-coin-ticker {
+    color: #8E8E93;
+    font-size: 13px;
+}
+
+.trade-coin-price {
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    margin-right: 16px;
+}
+
+.trade-coin-change {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.trade-coin-change.positive {
+    color: #34C759;
+}
+
+.trade-coin-change.negative {
+    color: #FF3B30;
+} 

@@ -14,10 +14,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import configurations and routes
 from config.config import TELEGRAM_BOT_TOKEN, FLASK_HOST, FLASK_PORT
 from src.api.wallet_routes import wallet_bp
+from src.api.coins_routes import coins_api
 
 # Initialize Flask app
 app = Flask(__name__)
 app.register_blueprint(wallet_bp, url_prefix='/api')
+app.register_blueprint(coins_api)
 
 # Telegram bot command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):

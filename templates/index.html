@@ -12,14 +12,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="header-bar">
-        <a href="#" class="close-btn" id="close-btn">Close</a>
-        <div class="title">Wallet</div>
-        <div style="width: 48px;"></div> <!-- Spacer for balance -->
+    <div class="header-bar rounded-header double-tab-header">
+        <button class="close-btn-x" id="close-btn" aria-label="Close">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="8" y1="8" x2="24" y2="24" stroke="#3390EC" stroke-width="3" stroke-linecap="round"/>
+                <line x1="24" y1="8" x2="8" y2="24" stroke="#3390EC" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+        </button>
+        <div class="header-tabs">
+            <button class="header-tab active" data-tab="wallet">Wallet</button>
+            <button class="header-tab" data-tab="cex">CEX</button>
+        </div>
     </div>
     
     <main id="main-content">
         <div class="wallet-content">
+            <div class="segmented-control" id="wallet-segmented">
+                <button class="segment active" data-segment="wallet">Wallet</button>
+                <button class="segment" data-segment="cex">CEX</button>
+            </div>
             <div class="balance-section">
                 <div class="balance-label">Wallet Balance</div>
                 <div class="balance-amount" id="balance">USD 1000.00</div>

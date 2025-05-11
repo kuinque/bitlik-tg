@@ -67,11 +67,7 @@ function showTabContent(tab) {
             renderWalletTab();
             break;
         case 'trade':
-            mainContent.innerHTML = `
-                <div class="page-content">
-                    <h2>Trade</h2>
-                    <p>Trading features coming soon...</p>
-                </div>`;
+            renderTradeTab();
             break;
         case 'earn':
             mainContent.innerHTML = `
@@ -90,81 +86,121 @@ function showTabContent(tab) {
 function renderWalletTab() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
+        <div class="segmented-control">
+            <button class="segment segment-wallet active">Wallet</button>
+            <button class="segment segment-cex">CEX</button>
+        </div>
         <div class="wallet-content">
             <div class="balance-section">
                 <div class="balance-label">Wallet Balance</div>
                 <div class="balance-amount" id="balance">Loading...</div>
             </div>
-            
-            <div class="action-buttons">
-                <div class="action-button" id="send-btn">
-                    <div class="action-icon">
-                        <svg width="24" height="24" fill="none" stroke="#3390EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 19V5"/>
-                            <path d="M5 12l7-7 7 7"/>
-                        </svg>
+            <div class="wallet-actions-row">
+                <div class="wallet-action-card">
+                    <div class="wallet-action-icon-bg">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#3390EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7V21"/><path d="M7 14l7-7 7 7"/></svg>
                     </div>
-                    <div class="action-label">Send</div>
+                    <div class="wallet-action-label">Send</div>
                 </div>
-                
-                <div class="action-button" id="add-crypto-btn">
-                    <div class="action-icon">
-                        <svg width="24" height="24" fill="none" stroke="#3390EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="16"/>
-                            <line x1="8" y1="12" x2="16" y2="12"/>
-                        </svg>
+                <div class="wallet-action-card">
+                    <div class="wallet-action-icon-bg">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#3390EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="14" r="9"/><path d="M14 10v8"/><path d="M10 14h8"/></svg>
                     </div>
-                    <div class="action-label">Add Crypto</div>
+                    <div class="wallet-action-label">Add Crypto</div>
                 </div>
-                
-                <div class="action-button" id="exchange-btn">
-                    <div class="action-icon">
-                        <svg width="24" height="24" fill="none" stroke="#3390EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 1l4 4-4 4"/>
-                            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-                            <path d="M7 23l-4-4 4-4"/>
-                            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-                        </svg>
+                <div class="wallet-action-card">
+                    <div class="wallet-action-icon-bg">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#3390EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14h10"/><path d="M14 9l5 5-5 5"/></svg>
                     </div>
-                    <div class="action-label">Exchange</div>
+                    <div class="wallet-action-label">Exchange</div>
                 </div>
-                
-                <div class="action-button" id="p2p-btn">
-                    <div class="action-icon">
-                        <svg width="24" height="24" fill="none" stroke="#3390EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
+                <div class="wallet-action-card">
+                    <div class="wallet-action-icon-bg">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#3390EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="16" height="12" rx="3"/><path d="M10 12h8"/><path d="M10 16h8"/></svg>
                     </div>
-                    <div class="action-label">P2P Market</div>
+                    <div class="wallet-action-label">P2P Market</div>
                 </div>
             </div>
         </div>
     `;
     
-    // Set up action button handlers
-    document.getElementById('send-btn').addEventListener('click', sendMoneyUI);
-    document.getElementById('add-crypto-btn').addEventListener('click', () => tg.showPopup({
-        title: 'Add Crypto',
-        message: 'Add Crypto functionality coming soon',
-        buttons: [{type: 'ok'}]
-    }));
-    document.getElementById('exchange-btn').addEventListener('click', () => tg.showPopup({
-        title: 'Exchange',
-        message: 'Exchange functionality coming soon',
-        buttons: [{type: 'ok'}]
-    }));
-    document.getElementById('p2p-btn').addEventListener('click', () => tg.showPopup({
-        title: 'P2P Market',
-        message: 'P2P Market functionality coming soon',
-        buttons: [{type: 'ok'}]
-    }));
-    
+    // Segmented control logic
+    const walletTab = document.querySelector('.segment-wallet');
+    const cexTab = document.querySelector('.segment-cex');
+    walletTab.addEventListener('click', function() {
+        walletTab.classList.add('active');
+        cexTab.classList.remove('active');
+        document.querySelector('.wallet-content').style.display = '';
+    });
+    cexTab.addEventListener('click', function() {
+        cexTab.classList.add('active');
+        walletTab.classList.remove('active');
+        document.querySelector('.wallet-content').style.display = 'none';
+        tg.showPopup({
+            title: 'CEX',
+            message: 'Available soon',
+            buttons: [{type: 'ok'}]
+        });
+    });
+
     // Load balance data
     loadBalance();
+}
+
+function renderTradeTab() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="trade-section">
+            <div class="trade-tabs">
+                <button class="trade-tab active" data-tab="all">All</button>
+                <button class="trade-tab" data-tab="gainers">Top Gainers</button>
+                <button class="trade-tab" data-tab="losers">Top Losers</button>
+            </div>
+            <div class="trade-list" id="trade-list">Loading...</div>
+        </div>
+    `;
+
+    let coins = [];
+    let currentTab = 'all';
+
+    fetch('/api/coins')
+        .then(res => res.json())
+        .then(data => {
+            coins = data;
+            renderCoinsList();
+        });
+
+    function renderCoinsList() {
+        let filtered = coins;
+        if (currentTab === 'gainers') {
+            filtered = [...coins].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h).slice(0, 8);
+        } else if (currentTab === 'losers') {
+            filtered = [...coins].sort((a, b) => a.price_change_percentage_24h - b.price_change_percentage_24h).slice(0, 8);
+        }
+        const list = filtered.map(coin => `
+            <div class="trade-coin">
+                <img class="trade-coin-icon" src="${coin.image}" alt="${coin.symbol}">
+                <div class="trade-coin-info">
+                    <div class="trade-coin-title">${coin.name}</div>
+                    <div class="trade-coin-ticker">${coin.symbol.toUpperCase()}</div>
+                </div>
+                <div class="trade-coin-price">$${coin.current_price.toLocaleString()}</div>
+                <div class="trade-coin-change ${coin.price_change_percentage_24h >= 0 ? 'positive' : 'negative'}">
+                    ${coin.price_change_percentage_24h >= 0 ? '+' : ''}${coin.price_change_percentage_24h.toFixed(2)}%
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('trade-list').innerHTML = list;
+    }
+
+    document.querySelectorAll('.trade-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.trade-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            currentTab = this.dataset.tab;
+            renderCoinsList();
+        });
+    });
 }
 
 function renderHistoryTab() {
