@@ -132,6 +132,8 @@ function renderWalletTab() {
                     <div class="wallet-action-label">P2P Market</div>
                 </div>
             </div>
+            <div id="main-currencies-card"></div>
+            <div id="trending-section"></div>
         </div>
     `;
     
@@ -156,6 +158,101 @@ function renderWalletTab() {
 
     // Load balance data
     loadBalance();
+    // Load main currencies and trending
+    renderMainCurrencies();
+    renderTrendingSection();
+}
+
+// Основные валюты (пример: USDT, TON, BTC)
+function renderMainCurrencies() {
+    const el = document.getElementById('main-currencies-card');
+    fetch('/api/coins').then(res => res.json()).then(data => {
+        // Используем image из CoinGecko (как во вкладке trade)
+        const mainCoins = [
+            { symbol: 'usdt', name: 'Dollars', color: '#4cc47a' },
+            { symbol: 'ton', name: 'Toncoin', color: '#3390EC' },
+            { symbol: 'btc', name: 'Bitcoin', color: '#f7931a' }
+        ];
+        const coinsMap = Object.fromEntries(data.map(c => [c.symbol.toLowerCase(), c]));
+        el.innerHTML = `
+        <div class="main-currencies-card">
+            ${mainCoins.map(mc => {
+                const c = coinsMap[mc.symbol];
+                const icon = c && c.image ? c.image : '/static/img/default-coin.svg';
+                return `<div class="main-currency-row">
+                    <img src="${icon}" class="main-currency-icon" style="background:${mc.color}10;" onerror="this.src='/static/img/default-coin.svg'">
+                    <div>
+                        <div class="main-currency-title">${mc.name}</div>
+                        <div class="main-currency-rate">
+                            ${c ? '₽' + (c.current_price * (c.symbol === 'usdt' ? 82.49 : 1)).toLocaleString(undefined, {maximumFractionDigits: 2}) : '-'}
+                            <span class="main-currency-change ${c && c.price_change_percentage_24h < 0 ? 'negative' : 'positive'}">
+                                ${c ? (c.price_change_percentage_24h >= 0 ? '↑' : '↓') + ' ' + Math.abs(c.price_change_percentage_24h).toFixed(2) + '%' : ''}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="main-currency-balance">
+                        ₽0.00<br><span class="main-currency-ticker">0 ${c ? c.symbol.toUpperCase() : ''}</span>
+                    </div>
+                </div>`;
+            }).join('<hr class="main-currency-divider">')}
+        </div>`;
+    });
+}
+
+// Trending секция
+function renderTrendingSection() {
+    const el = document.getElementById('trending-section');
+    fetch('/api/coins').then(res => res.json()).then(data => {
+        // Топ-4 по росту
+        const trending = [...data].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h).slice(0, 4);
+        el.innerHTML = `
+        <div class="trending-section">
+            <div class="trending-header">
+                <span>TRENDING</span>
+                <a href="#" class="trending-more">MORE</a>
+            </div>
+            <div class="trending-grid">
+                ${trending.map((coin, i) => `
+                <div class="trending-card">
+                    <img src="${coin.image}" class="trending-icon">
+                    <div class="trending-title">${coin.symbol.toUpperCase()}</div>
+                    <canvas id="spark-${i}" class="trending-sparkline"></canvas>
+                    <div class="trending-growth ${coin.price_change_percentage_24h >= 0 ? 'positive' : 'negative'}">
+                        ${coin.price_change_percentage_24h >= 0 ? '↑' : '↓'} ${Math.abs(coin.price_change_percentage_24h).toFixed(2)}%
+                    </div>
+                    <div class="trending-price">₽${coin.current_price.toLocaleString()}</div>
+                </div>
+                `).join('')}
+            </div>
+        </div>`;
+        // Мини-графики (sparklines)
+        trending.forEach((coin, i) => {
+            fetch(`https://api.coingecko.com/api/v3/coins/${coin.id}/market_chart?vs_currency=usd&days=1`).then(res => res.json()).then(chart => {
+                const prices = chart.prices.map(p => p[1]);
+                const ctx = document.getElementById(`spark-${i}`).getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: prices, datasets: [{ data: prices, borderColor: '#34C759', backgroundColor: 'rgba(52,199,89,0.06)', pointRadius: 0, borderWidth: 2, fill: false, tension: 0.3 }] },
+                    options: {
+                        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                        scales: { x: { display: false }, y: { display: false } },
+                        elements: { line: { borderCapStyle: 'round' } },
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        animation: false,
+                    }
+                });
+            });
+        });
+        // Переход по кнопке MORE
+        const moreBtn = el.querySelector('.trending-more');
+        if (moreBtn) {
+            moreBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('.tab[data-tab="trade"]').click();
+            });
+        }
+    });
 }
 
 function renderTradeTab() {
