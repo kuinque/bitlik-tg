@@ -46,6 +46,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the default tab
     showTabContent('wallet');
+
+    // Chart range tab logic
+    document.querySelectorAll('.chart-range-tabs button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.chart-range-tabs button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            loadCoinChartData('bitcoin', this.dataset.range);
+        });
+    });
+    // Инициализация графика по умолчанию
+    loadCoinChartData('bitcoin', '1D');
 });
 
 // Map tabs to header titles
@@ -302,4 +313,58 @@ async function sendMoneyUI() {
         console.error('Error sending money:', error);
         alert('Network error. Please try again later.');
     }
+}
+
+// Chart.js integration for coin chart
+let coinChart;
+async function loadCoinChartData(coinId = 'bitcoin', range = '1D') {
+    let days = '1';
+    if (range === '1W') days = '7';
+    if (range === '1M') days = '30';
+    if (range === '1Y') days = '365';
+    if (range === 'ALL') days = 'max';
+    try {
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`);
+        const data = await res.json();
+        const prices = data.prices.map(p => p[1]);
+        const labels = data.prices.map(p => {
+            const d = new Date(p[0]);
+            if (range === '1D') return d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            if (range === '1W' || range === '1M') return d.toLocaleDateString([], {month: 'short', day: 'numeric'});
+            return d.toLocaleDateString();
+        });
+        renderCoinChart(prices, labels);
+    } catch (e) {
+        renderCoinChart([], []);
+    }
+}
+
+function renderCoinChart(prices, labels) {
+    const ctx = document.getElementById('coinChart').getContext('2d');
+    if (coinChart) coinChart.destroy();
+    coinChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: prices,
+                borderColor: '#34C759',
+                backgroundColor: 'rgba(52,199,89,0.08)',
+                pointRadius: 0,
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { display: false },
+                y: { display: false }
+            },
+            elements: { line: { borderCapStyle: 'round' } },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 }

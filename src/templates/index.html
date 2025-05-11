@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tabs.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/wallet.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Removed the header bar as requested -->
@@ -17,6 +18,16 @@
     <!-- Segmented control will be rendered dynamically in JS only for Wallet tab -->
 
     <main id="main-content">
+        <div class="coin-chart-card">
+          <canvas id="coinChart" height="120"></canvas>
+          <div class="chart-range-tabs">
+            <button data-range="1D" class="active">1D</button>
+            <button data-range="1W">1W</button>
+            <button data-range="1M">1M</button>
+            <button data-range="1Y">1Y</button>
+            <button data-range="ALL">All</button>
+          </div>
+        </div>
         <div class="wallet-content">
             <div class="balance-section">
                 <div class="balance-label">Wallet Balance</div>

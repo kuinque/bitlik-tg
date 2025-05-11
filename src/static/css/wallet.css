@@ -83,11 +83,9 @@
     border-bottom: 2px solid #3390EC;
 }
 
-.trade-list {
-    background: #181A20;
-    border-radius: 14px;
-    padding: 0;
-    overflow: hidden;
+.trade-list, .transactions-list {
+    padding-bottom: 80px;
+    position: relative;
 }
 
 .trade-coin {
@@ -143,4 +141,37 @@
 
 .trade-coin-change.negative {
     color: #FF3B30;
+}
+
+.coin-chart-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px 18px 0 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 12px rgba(36,129,204,0.06);
+    position: relative;
+}
+
+.chart-range-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin: 12px 0 0 0;
+    padding-bottom: 12px;
+}
+
+.chart-range-tabs button {
+    background: #f4f4f6;
+    border: none;
+    border-radius: 18px;
+    padding: 6px 18px;
+    font-size: 15px;
+    color: #8E8E93;
+    font-weight: 500;
+    margin-right: 6px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.chart-range-tabs button.active {
+    background: #3390EC;
+    color: #fff;
 } 
