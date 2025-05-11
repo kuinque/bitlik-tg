@@ -340,10 +340,10 @@ function renderCoinDetails(coin) {
                 <canvas id="coinChart" height="120"></canvas>
                 <div class="chart-range-tabs">
                     <button data-range="1D" class="active">1D</button>
-                    <button data-range="1W" disabled>1W</button>
-                    <button data-range="1M" disabled>1M</button>
-                    <button data-range="1Y" disabled>1Y</button>
-                    <button data-range="ALL" disabled>All</button>
+                    <button data-range="1W">1W</button>
+                    <button data-range="1M">1M</button>
+                    <button data-range="1Y">1Y</button>
+                    <button data-range="ALL">All</button>
                 </div>
             </div>
             <div class="coin-balance-block">
@@ -362,17 +362,27 @@ function renderCoinDetails(coin) {
     `;
     // Назад
     document.querySelector('.back-btn').addEventListener('click', () => renderTradeTab());
-    // График из кэша (только 1D)
-    const prices = coin.market_chart ? coin.market_chart.map(p => p[1]) : [];
-    const labels = coin.market_chart ? coin.market_chart.map(p => new Date(p[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})) : [];
-    renderCoinChart(prices, labels);
-    // Диапазоны (только 1D доступен)
+    // График: по умолчанию 1D
+    let currentRange = '1D';
+    function updateChart(range) {
+        const chartData = coin.market_chart && coin.market_chart[range] ? coin.market_chart[range] : [];
+        const prices = chartData.map(p => p[1]);
+        let labels;
+        if (range === '1D') {
+            labels = chartData.map(p => new Date(p[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+        } else {
+            labels = chartData.map(p => new Date(p[0]).toLocaleDateString([], {month: 'short', day: 'numeric'}));
+        }
+        renderCoinChart(prices, labels);
+    }
+    updateChart(currentRange);
+    // Диапазоны
     document.querySelectorAll('.chart-range-tabs button').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.chart-range-tabs button').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            // Пока только 1D (кэш)
-            renderCoinChart(prices, labels);
+            currentRange = this.dataset.range;
+            updateChart(currentRange);
         });
     });
     // Баланс (заглушка)

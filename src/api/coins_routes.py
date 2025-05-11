@@ -13,6 +13,12 @@ CACHE_TTL = 60  # секунд
 @coins_api.route('/api/coins')
 def get_coins():
     now = time.time()
+    # Всегда возвращаем кэш, если он есть, даже если устарел, если CoinGecko не отвечает
+    def return_cache_or_error():
+        if coins_cache['data']:
+            return jsonify(coins_cache['data'])
+        return jsonify({'error': 'No cached data and CoinGecko unavailable'}), 502
+
     if coins_cache['data'] and now - coins_cache['timestamp'] < CACHE_TTL:
         return jsonify(coins_cache['data'])
     url = 'https://api.coingecko.com/api/v3/coins/markets'
@@ -27,15 +33,10 @@ def get_coins():
         response = requests.get(url, params=params)
         data = response.json()
     except Exception:
-        # Если не удалось получить новые данные, возвращаем старый кэш
-        if coins_cache['data']:
-            return jsonify(coins_cache['data'])
-        return jsonify({'error': 'Invalid response from CoinGecko'}), 502
+        return return_cache_or_error()
 
     if not isinstance(data, list):
-        if coins_cache['data']:
-            return jsonify(coins_cache['data'])
-        return jsonify({'error': 'CoinGecko API error', 'details': data}), 502
+        return return_cache_or_error()
 
     chart_ranges = {
         '1D': {'days': 1},
@@ -54,7 +55,15 @@ def get_coins():
                 chart_data = chart_resp.json()
                 market_chart[key] = chart_data.get('prices', [])
             except Exception:
-                market_chart[key] = []
+                # Если не удалось получить график — пробуем взять из кэша
+                if coins_cache['data']:
+                    cached_coin = next((coin for coin in coins_cache['data'] if coin['id'] == c['id']), None)
+                    if cached_coin and 'market_chart' in cached_coin and key in cached_coin['market_chart']:
+                        market_chart[key] = cached_coin['market_chart'][key]
+                    else:
+                        market_chart[key] = []
+                else:
+                    market_chart[key] = []
         coins.append({
             'id': c['id'],
             'name': c['name'],
