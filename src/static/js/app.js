@@ -225,23 +225,22 @@ function renderTrendingSection() {
                 `).join('')}
             </div>
         </div>`;
-        // Мини-графики (sparklines)
+        // Мини-графики (sparklines) — используем market_chart из кэша
         trending.forEach((coin, i) => {
-            fetch(`https://api.coingecko.com/api/v3/coins/${coin.id}/market_chart?vs_currency=usd&days=1`).then(res => res.json()).then(chart => {
-                const prices = chart.prices.map(p => p[1]);
-                const ctx = document.getElementById(`spark-${i}`).getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: { labels: prices, datasets: [{ data: prices, borderColor: '#34C759', backgroundColor: 'rgba(52,199,89,0.06)', pointRadius: 0, borderWidth: 2, fill: false, tension: 0.3 }] },
-                    options: {
-                        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                        scales: { x: { display: false }, y: { display: false } },
-                        elements: { line: { borderCapStyle: 'round' } },
-                        responsive: false,
-                        maintainAspectRatio: false,
-                        animation: false,
-                    }
-                });
+            const prices = coin.market_chart ? coin.market_chart.map(p => p[1]) : [];
+            if (!prices.length) return;
+            const ctx = document.getElementById(`spark-${i}`).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels: prices, datasets: [{ data: prices, borderColor: '#34C759', backgroundColor: 'rgba(52,199,89,0.06)', pointRadius: 0, borderWidth: 2, fill: false, tension: 0.3 }] },
+                options: {
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: { x: { display: false }, y: { display: false } },
+                    elements: { line: { borderCapStyle: 'round' } },
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    animation: false,
+                }
             });
         });
         // Переход по кнопке MORE
@@ -341,10 +340,10 @@ function renderCoinDetails(coin) {
                 <canvas id="coinChart" height="120"></canvas>
                 <div class="chart-range-tabs">
                     <button data-range="1D" class="active">1D</button>
-                    <button data-range="1W">1W</button>
-                    <button data-range="1M">1M</button>
-                    <button data-range="1Y">1Y</button>
-                    <button data-range="ALL">All</button>
+                    <button data-range="1W" disabled>1W</button>
+                    <button data-range="1M" disabled>1M</button>
+                    <button data-range="1Y" disabled>1Y</button>
+                    <button data-range="ALL" disabled>All</button>
                 </div>
             </div>
             <div class="coin-balance-block">
@@ -363,16 +362,20 @@ function renderCoinDetails(coin) {
     `;
     // Назад
     document.querySelector('.back-btn').addEventListener('click', () => renderTradeTab());
-    // График
+    // График из кэша (только 1D)
+    const prices = coin.market_chart ? coin.market_chart.map(p => p[1]) : [];
+    const labels = coin.market_chart ? coin.market_chart.map(p => new Date(p[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})) : [];
+    renderCoinChart(prices, labels);
+    // Диапазоны (только 1D доступен)
     document.querySelectorAll('.chart-range-tabs button').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.chart-range-tabs button').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            loadCoinChartData(coin.id, this.dataset.range);
+            // Пока только 1D (кэш)
+            renderCoinChart(prices, labels);
         });
     });
-    loadCoinChartData(coin.id, '1D');
-    // Баланс (заглушка, можно заменить на реальный запрос)
+    // Баланс (заглушка)
     document.getElementById('coin-balance').textContent = '$0.00 (0 ' + coin.symbol.toUpperCase() + ')';
     // Описание
     fetch(`https://api.coingecko.com/api/v3/coins/${coin.id}`)
@@ -385,12 +388,49 @@ function renderCoinDetails(coin) {
 function renderHistoryTab() {
     const mainContent = document.getElementById('main-content');
     mainContent.innerHTML = `
-        <div class="transactions">
-            <h2>Transaction History</h2>
+        <div class="transactions-section">
+            <div class="transactions-title">Transaction History</div>
             <div id="transactions-list" class="transactions-list"></div>
         </div>
     `;
-    loadTransactions();
+    loadTransactionsStyled();
+}
+
+async function loadTransactionsStyled() {
+    try {
+        const response = await fetch(`/api/transactions?user_id=${userId}`);
+        const transactions = await response.json();
+        const transactionsList = document.getElementById('transactions-list');
+        if (!transactions || transactions.length === 0) {
+            transactionsList.innerHTML = '<div class="empty-state">No transactions yet</div>';
+            return;
+        }
+        transactionsList.innerHTML = transactions.map(transaction => {
+            const isReceive = transaction.type === 'receive';
+            const icon = isReceive
+                ? `<span class="tx-icon tx-in">&#8593;</span>`
+                : `<span class="tx-icon tx-out">&#8595;</span>`;
+            const title = isReceive
+                ? `Received from <span class="tx-peer">${transaction.from || ''}</span>`
+                : `Sent to <span class="tx-peer">${transaction.to || ''}</span>`;
+            const date = new Date(transaction.date).toLocaleDateString('en-GB');
+            const amount = (isReceive ? '+' : '-') + ' ' + transaction.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            return `
+                <div class="transaction-card">
+                    <div class="tx-row">
+                        ${icon}
+                        <div class="tx-main">
+                            <div class="tx-title">${title}</div>
+                            <div class="tx-date">${date}</div>
+                        </div>
+                        <div class="tx-amount ${isReceive ? 'amount-positive' : 'amount-negative'}">${amount}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (error) {
+        document.getElementById('transactions-list').innerHTML = '<div class="error-state">Failed to load transactions</div>';
+    }
 }
 
 // Load balance
@@ -403,40 +443,6 @@ async function loadBalance() {
     } catch (error) {
         console.error('Error loading balance:', error);
         document.getElementById('balance').textContent = 'Error loading balance';
-    }
-}
-
-// Load transactions
-async function loadTransactions() {
-    try {
-        const response = await fetch(`/api/transactions?user_id=${userId}`);
-        const transactions = await response.json();
-        const transactionsList = document.getElementById('transactions-list');
-        
-        if (!transactions || transactions.length === 0) {
-            transactionsList.innerHTML = '<div class="empty-state">No transactions yet</div>';
-            return;
-        }
-        
-        transactionsList.innerHTML = transactions.map(transaction => `
-            <div class="transaction-item">
-                <div class="transaction-info">
-                    <div class="transaction-title">
-                        ${transaction.type === 'send' ? `Sent to ${transaction.to || ''}` : `Received from ${transaction.from || ''}`}
-                    </div>
-                    <div class="transaction-date">
-                        ${new Date(transaction.date).toLocaleDateString()}
-                    </div>
-                </div>
-                <div class="transaction-amount ${transaction.type === 'receive' ? 'amount-positive' : 'amount-negative'}">
-                    ${transaction.type === 'receive' ? '+' : '-'} ${transaction.amount.toFixed(2)}
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading transactions:', error);
-        document.getElementById('transactions-list').innerHTML = 
-            '<div class="error-state">Failed to load transactions</div>';
     }
 }
 
@@ -472,7 +478,7 @@ async function sendMoneyUI() {
             alert('Money sent successfully');
             loadBalance();
             if (document.getElementById('transactions-list')) {
-                loadTransactions();
+                loadTransactionsStyled();
             }
         } else {
             alert(result.error || 'Failed to send money');

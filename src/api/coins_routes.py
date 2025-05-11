@@ -23,27 +23,38 @@ def get_coins():
         'page': 1,
         'sparkline': False
     }
-    response = requests.get(url, params=params)
     try:
+        response = requests.get(url, params=params)
         data = response.json()
     except Exception:
+        # Если не удалось получить новые данные, возвращаем старый кэш
+        if coins_cache['data']:
+            return jsonify(coins_cache['data'])
         return jsonify({'error': 'Invalid response from CoinGecko'}), 502
 
-    # Если data не список — ошибка
     if not isinstance(data, list):
+        if coins_cache['data']:
+            return jsonify(coins_cache['data'])
         return jsonify({'error': 'CoinGecko API error', 'details': data}), 502
 
+    chart_ranges = {
+        '1D': {'days': 1},
+        '1W': {'days': 7},
+        '1M': {'days': 30},
+        '1Y': {'days': 365},
+        'ALL': {'days': 'max'}
+    }
     coins = []
     for c in data:
-        # Получаем market_chart (график за 1 день)
-        chart_url = f'https://api.coingecko.com/api/v3/coins/{c["id"]}/market_chart'
-        chart_params = {'vs_currency': 'usd', 'days': 1}
-        chart_resp = requests.get(chart_url, params=chart_params)
-        try:
-            chart_data = chart_resp.json()
-            prices = chart_data.get('prices', [])
-        except Exception:
-            prices = []
+        market_chart = {}
+        for key, params_chart in chart_ranges.items():
+            try:
+                chart_url = f'https://api.coingecko.com/api/v3/coins/{c["id"]}/market_chart'
+                chart_resp = requests.get(chart_url, params={'vs_currency': 'usd', 'days': params_chart['days']})
+                chart_data = chart_resp.json()
+                market_chart[key] = chart_data.get('prices', [])
+            except Exception:
+                market_chart[key] = []
         coins.append({
             'id': c['id'],
             'name': c['name'],
@@ -51,7 +62,7 @@ def get_coins():
             'image': c['image'],
             'current_price': c['current_price'],
             'price_change_percentage_24h': c['price_change_percentage_24h'],
-            'market_chart': prices
+            'market_chart': market_chart
         })
     coins_cache['data'] = coins
     coins_cache['timestamp'] = now
