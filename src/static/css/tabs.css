@@ -4,10 +4,10 @@
     align-items: center;
     background: #23232b;
     border-radius: 999px;
-    padding: 6px 8px;
-    margin: 32px auto 24px auto;
-    width: 90%;
-    max-width: 420px;
+    padding: 6px 6px;
+    margin: 32px 20px 20px 20px;
+    width: calc(100% - 40px - 60px);
+    max-width: 320px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
@@ -16,9 +16,9 @@
     border: none;
     background: transparent;
     color: #b0b0b0;
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 500;
-    padding: 12px 0;
+    padding: 8px 4px;
     border-radius: 999px;
     transition: background 0.2s, color 0.2s, box-shadow 0.2s;
     cursor: pointer;
@@ -62,7 +62,7 @@
     background: none;
     border: none;
     border-radius: 12px;
-    padding: 8px 0;
+    padding: 4px 0;
 }
 
 .tab.active {

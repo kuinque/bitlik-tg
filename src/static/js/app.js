@@ -21,6 +21,76 @@ document.documentElement.style.setProperty('--tg-theme-link-color', tg.themePara
 document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#3390EC');
 document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#FFFFFF');
 
+// Function to load user profile and update avatar
+async function loadUserProfile() {
+    const avatarImg = document.querySelector('.profile-icon-top-right img');
+    if (!userId) {
+        console.error('user_id is required to load profile');
+         if (avatarImg) {
+            avatarImg.src = '/static/img/default-avatar.png'; // Ensure default is shown if no userId
+        }
+        return;
+    }
+
+    try {
+        let response = await fetch(`/api/user_profile?user_id=${userId}`);
+
+        // If user not found, try creating the user
+        if (response.status === 404) {
+            console.log('User not found, attempting to create...');
+            const createResponse = await fetch('/api/user_profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: userId })
+            });
+
+            if (!createResponse.ok) {
+                console.error('Failed to create user profile:', createResponse.status, await createResponse.text());
+                 if (avatarImg) {
+                    avatarImg.src = '/static/img/default-avatar.png'; // Fallback on creation failure
+                }
+                return;
+            }
+
+            console.log('User created, fetching profile again...');
+            // Fetch the newly created user's profile
+            response = await fetch(`/api/user_profile?user_id=${userId}`);
+             if (!response.ok) {
+                 console.error('Failed to fetch user profile after creation:', response.status, await response.text());
+                  if (avatarImg) {
+                    avatarImg.src = '/static/img/default-avatar.png'; // Fallback on fetch after creation failure
+                }
+                return;
+             }
+        }
+
+        if (!response.ok) {
+             console.error('Failed to fetch user profile:', response.status, await response.text());
+              if (avatarImg) {
+                    avatarImg.src = '/static/img/default-avatar.png'; // Fallback on initial fetch failure
+                }
+            return;
+        }
+
+        const userData = await response.json();
+
+        if (avatarImg && userData.avatar_url) {
+            avatarImg.src = userData.avatar_url;
+        } else if (avatarImg) {
+            avatarImg.src = '/static/img/default-avatar.png'; // Fallback if avatar_url is missing in data
+        }
+
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+        // Optionally, keep the default avatar or show an error state
+         if (avatarImg) {
+            avatarImg.src = '/static/img/default-avatar.png'; // Fallback on general error
+        }
+    }
+}
+
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Tab switching logic
@@ -57,6 +127,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     // Инициализация графика по умолчанию
     loadCoinChartData('bitcoin', '1D');
+
+    // Load user profile
+    loadUserProfile();
 });
 
 // Map tabs to header titles
@@ -69,9 +142,18 @@ const titleMap = {
 
 function showTabContent(tab) {
     const mainContent = document.getElementById('main-content');
+    const profileIcon = document.querySelector('.profile-icon-top-right');
+
     // Update header title
     const headerTitle = document.querySelector('.header-bar .title');
     if (headerTitle) headerTitle.textContent = titleMap[tab] || '';
+
+    // Show/hide profile icon based on the active tab
+    if (tab === 'wallet') {
+        if (profileIcon) profileIcon.style.display = 'flex'; // Assuming flex display based on your HTML structure
+    } else {
+        if (profileIcon) profileIcon.style.display = 'none';
+    }
     
     switch(tab) {
         case 'wallet':
@@ -144,16 +226,13 @@ function renderWalletTab() {
         walletTab.classList.add('active');
         cexTab.classList.remove('active');
         document.querySelector('.wallet-content').style.display = '';
+        document.getElementById('coming-soon-message').style.display = 'none';
     });
     cexTab.addEventListener('click', function() {
         cexTab.classList.add('active');
         walletTab.classList.remove('active');
         document.querySelector('.wallet-content').style.display = 'none';
-        tg.showPopup({
-            title: 'CEX',
-            message: 'Available soon',
-            buttons: [{type: 'ok'}]
-        });
+        document.getElementById('coming-soon-message').style.display = '';
     });
 
     // Load balance data

@@ -15,11 +15,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config.config import TELEGRAM_BOT_TOKEN, FLASK_HOST, FLASK_PORT
 from src.api.wallet_routes import wallet_bp
 from src.api.coins_routes import coins_api
+from src.api.user_routes import user_bp
 
 # Initialize Flask app
 app = Flask(__name__)
 app.register_blueprint(wallet_bp, url_prefix='/api')
 app.register_blueprint(coins_api)
+app.register_blueprint(user_bp, url_prefix='/api')
 
 # Telegram bot command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -42,6 +44,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def index():
     """Render the main page of the web app."""
     return render_template('index.html')
+
+# Flask route for the profile page
+@app.route('/profile')
+def profile():
+    """Render the profile page."""
+    return render_template('profile.html')
 
 # Flask route to proxy user data from another service
 @app.route('/proxy-users')

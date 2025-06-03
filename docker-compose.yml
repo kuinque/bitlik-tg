@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=src/app.py
+      - FLASK_ENV=production
+      - NGROK_AUTH_TOKEN=${NGROK_AUTH_TOKEN}
+    volumes:
+      - .:/app
+    restart: unless-stopped 
