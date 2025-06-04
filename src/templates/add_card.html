@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Card</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_card.css') }}"> {# We'll create this next #}
+</head>
+<body>
+    <div class="container">
+        <h1>Add New Card</h1>
+        <div class="card-form">
+            <form id="add-card-form">
+                <div class="form-group">
+                    <label for="card-number">Card Number</label>
+                    <input type="text" id="card-number" name="card-number" placeholder="Enter card number" required>
+                </div>
+                <div class="form-group">
+                    <label for="expiry-date">Expiry Date</label>
+                    <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY" required>
+                </div>
+                <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" name="cvv" placeholder="CVV" required>
+                </div>
+                <button type="submit" class="btn-submit">Add Card</button>
+            </form>
+        </div>
+        <a href="/">Back to Wallet</a>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/add_card.js') }}"> {# We can add JS later for form handling #}</script>
+</body>
+</html> 

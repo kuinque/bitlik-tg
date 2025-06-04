@@ -163,11 +163,7 @@ function showTabContent(tab) {
             renderTradeTab();
             break;
         case 'earn':
-            mainContent.innerHTML = `
-                <div class="page-content">
-                    <h2>Earn</h2>
-                    <p>Earning features coming soon...</p>
-                </div>`;
+            renderEarnTab();
             break;
         case 'history':
             renderHistoryTab();
@@ -195,12 +191,12 @@ function renderWalletTab() {
                     </div>
                     <div class="wallet-action-label">Send</div>
                 </div>
-                <div class="wallet-action-card">
+                <a href="/add_card" class="wallet-action-card">
                     <div class="wallet-action-icon-bg">
                         <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#3390EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="14" r="9"/><path d="M14 10v8"/><path d="M10 14h8"/></svg>
                     </div>
                     <div class="wallet-action-label">Add Crypto</div>
-                </div>
+                </a>
                 <div class="wallet-action-card">
                     <div class="wallet-action-icon-bg">
                         <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#3390EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14h10"/><path d="M14 9l5 5-5 5"/></svg>
@@ -249,7 +245,7 @@ function renderMainCurrencies() {
         // Используем image из CoinGecko (как во вкладке trade)
         const mainCoins = [
             { symbol: 'usdt', name: 'Dollars', color: '#4cc47a' },
-            { symbol: 'ton', name: 'Toncoin', color: '#3390EC' },
+            { symbol: 'eth', name: 'Ethereum', color: '#627EEA' },
             { symbol: 'btc', name: 'Bitcoin', color: '#f7931a' }
         ];
         const coinsMap = Object.fromEntries(data.map(c => [c.symbol.toLowerCase(), c]));
@@ -258,6 +254,16 @@ function renderMainCurrencies() {
             ${mainCoins.map(mc => {
                 const c = coinsMap[mc.symbol];
                 const icon = c && c.image ? c.image : '/static/img/default-coin.svg';
+                // Determine the balance display based on the symbol
+                let balanceHtml;
+                if (mc.symbol === 'usdt') {
+                    // Hardcoded USDT balance with a non-integer value
+                    balanceHtml = `₽99351.55<br><span class="main-currency-ticker">~1212.32 USDT</span>`; // Adjusted USDT equivalent
+                } else {
+                    // Default display for other currencies
+                    balanceHtml = `₽0.00<br><span class="main-currency-ticker">0 ${c ? c.symbol.toUpperCase() : ''}</span>`;
+                }
+                
                 return `<div class="main-currency-row">
                     <img src="${icon}" class="main-currency-icon" style="background:${mc.color}10;" onerror="this.src='/static/img/default-coin.svg'">
                     <div>
@@ -270,7 +276,7 @@ function renderMainCurrencies() {
                         </div>
                     </div>
                     <div class="main-currency-balance">
-                        ₽0.00<br><span class="main-currency-ticker">0 ${c ? c.symbol.toUpperCase() : ''}</span>
+                        ${balanceHtml}
                     </div>
                 </div>`;
             }).join('<hr class="main-currency-divider">')}
@@ -331,6 +337,51 @@ function renderTrendingSection() {
             });
         }
     });
+}
+
+// Earn tab rendering
+function renderEarnTab() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <div class="page-content">
+            <h2>Liquid Pools</h2>
+            <div class="liquid-pools-list" id="liquid-pools-list">Loading liquid pools...</div> {# Add ID and loading text #}
+        </div>
+    `;
+
+    // Fetch and display liquid pools
+    fetch('/api/liquid_pools')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(liquidPools => {
+            const liquidPoolsListDiv = document.getElementById('liquid-pools-list');
+            if (!liquidPools || liquidPools.length === 0) {
+                liquidPoolsListDiv.innerHTML = '<div class="empty-state">No liquid pools available.</div>';
+                return;
+            }
+
+            // Generate HTML for each liquid pool
+            const poolsHtml = liquidPools.map(pool => `
+                <div class="liquid-pool-item">
+                    <h3>${pool.name}</h3>
+                    <p>${pool.description}</p>
+                    <p>APY: ${pool.apy}</p>
+                    <p>Tokens: ${pool.tokens.join(', ')}</p>
+                    {# Add a button or link for interacting with the pool later #}
+                </div>
+            `).join('');
+
+            liquidPoolsListDiv.innerHTML = poolsHtml;
+        })
+        .catch(error => {
+            console.error('Error fetching liquid pools:', error);
+            const liquidPoolsListDiv = document.getElementById('liquid-pools-list');
+            liquidPoolsListDiv.innerHTML = '<div class="error-state">Failed to load liquid pools.</div>';
+        });
 }
 
 function renderTradeTab() {
@@ -503,7 +554,8 @@ async function loadTransactionsStyled() {
                 ? `Received from <span class="tx-peer">${transaction.from || ''}</span>`
                 : `Sent to <span class="tx-peer">${transaction.to || ''}</span>`;
             const date = new Date(transaction.date).toLocaleDateString('en-GB');
-            const amount = (isReceive ? '+' : '-') + ' ' + transaction.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            // Format amount and add USDT symbol
+            const amount = (isReceive ? '+' : '-') + ' ' + transaction.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' USDT';
             return `
                 <div class="transaction-card">
                     <div class="tx-row">
@@ -524,6 +576,11 @@ async function loadTransactionsStyled() {
 
 // Load balance
 async function loadBalance() {
+    // Hardcoded balance display in Russian Rubles
+    document.getElementById('balance').textContent = '₽ 99351.55';
+    
+    // The original fetch logic is commented out below
+    /*
     try {
         const response = await fetch(`/api/balance?user_id=${userId}`);
         const data = await response.json();
@@ -533,6 +590,7 @@ async function loadBalance() {
         console.error('Error loading balance:', error);
         document.getElementById('balance').textContent = 'Error loading balance';
     }
+    */
 }
 
 // Send money UI

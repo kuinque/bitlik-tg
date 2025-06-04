@@ -1,0 +1,38 @@
+.page-content {
+    padding: 20px;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.liquid-pools-list {
+    margin-top: 20px;
+}
+
+.liquid-pool-item {
+    background: #23242a; /* Dark background like other cards */
+    border-radius: 12px; /* Rounded corners */
+    padding: 16px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 12px rgba(36,129,204,0.08); /* Subtle shadow */
+    color: var(--tg-theme-text-color); /* Use theme text color */
+}
+
+.liquid-pool-item h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #3A3D45; /* Dark grey for low contrast */
+}
+
+.liquid-pool-item p {
+    font-size: 14px;
+    margin-bottom: 0;
+    color: #3A3D45; /* Dark grey for low contrast */
+} 

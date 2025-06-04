@@ -1,0 +1,87 @@
+.container {
+    max-width: 420px; /* Similar to other containers */
+    margin: 40px auto; /* Center the container with top margin */
+    padding: 0 20px; /* Add horizontal padding */
+    color: var(--tg-theme-text-color); /* Use theme text color */
+    text-align: center;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #FFFFFF; /* White color for heading */
+}
+
+.card-form {
+    background: #23242a; /* Dark background like other cards */
+    border-radius: 28px; /* Rounded corners */
+    padding: 32px 24px; /* Inner padding */
+    margin: 24px auto; /* Vertical spacing and centering */
+    box-shadow: 0 4px 24px rgba(36,129,204,0.10); /* Shadow effect */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Stretch items to full width */
+}
+
+.form-group {
+    margin-bottom: 20px; /* Space between form groups */
+    text-align: left; /* Align labels and inputs to the left */
+}
+
+.form-group label {
+    display: block; /* Label on its own line */
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #8E8E93; /* Hint color for labels */
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #34373e; /* Subtle border */
+    border-radius: 12px; /* Rounded input corners */
+    background-color: #1c1d22; /* Dark input background */
+    color: var(--tg-theme-text-color); /* Theme text color for input */
+    font-size: 17px;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.form-group input[type="text"]::placeholder {
+    color: #5a5d63; /* Placeholder color */
+}
+
+.btn-submit {
+    display: block; /* Button on its own line */
+    width: 100%;
+    padding: 16px;
+    margin-top: 20px;
+    background-color: var(--tg-theme-button-color); /* Theme button color */
+    color: var(--tg-theme-button-text-color); /* Theme button text color */
+    border: none;
+    border-radius: 12px; /* Rounded button corners */
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease; /* Smooth hover effect */
+}
+
+.btn-submit:hover {
+    background-color: var(--tg-theme-button-color); /* Keep the same for now, or slightly darker if theme supports */
+    opacity: 0.9; /* Subtle hover opacity */
+}
+
+a {
+    display: inline-block; /* Make link a block for margin */
+    margin-top: 20px;
+    color: var(--tg-theme-link-color); /* Theme link color */
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+a:hover {
+    opacity: 0.8;
+} 

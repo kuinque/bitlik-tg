@@ -17,6 +17,8 @@ from src.api.wallet_routes import wallet_bp
 from src.api.coins_routes import coins_api
 # Import the blueprint factory function instead of the blueprint object
 from src.api.user_routes import create_user_blueprint
+# Import the new liquid pools blueprint
+from src.api.liquid_pools_routes import liquid_pools_bp
 
 from src.controllers.user_controller import UserController
 from src.services.user_service import UserService
@@ -36,6 +38,9 @@ app.register_blueprint(coins_api)
 # Use the blueprint factory function to create and register the user blueprint
 user_bp = create_user_blueprint(user_service)
 app.register_blueprint(user_bp, url_prefix='/api')
+
+# Register the new liquid pools blueprint
+app.register_blueprint(liquid_pools_bp, url_prefix='/api')
 
 # Telegram bot command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -64,6 +69,12 @@ def index():
 def profile():
     """Render the profile page."""
     return render_template('profile.html')
+
+# Flask route for adding a card
+@app.route('/add_card')
+def add_card():
+    """Render the add card page."""
+    return render_template('add_card.html')
 
 # Flask route to proxy user data from another service
 @app.route('/proxy-users')

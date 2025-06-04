@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tabs.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/wallet.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/earn.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -50,7 +51,7 @@
                     <div class="action-label">Send</div>
                 </div>
                 
-                <div class="action-button">
+                <a href="/add_card" class="action-button">
                     <div class="action-icon">
                         <svg width="24" height="24" fill="none" stroke="#3390EC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"/>
@@ -59,7 +60,7 @@
                         </svg>
                     </div>
                     <div class="action-label">Add Crypto</div>
-                </div>
+                </a>
                 
                 <div class="action-button">
                     <div class="action-icon">
