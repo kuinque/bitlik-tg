@@ -15,12 +15,26 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config.config import TELEGRAM_BOT_TOKEN, FLASK_HOST, FLASK_PORT
 from src.api.wallet_routes import wallet_bp
 from src.api.coins_routes import coins_api
-from src.api.user_routes import user_bp
+# Import the blueprint factory function instead of the blueprint object
+from src.api.user_routes import create_user_blueprint
+
+from src.controllers.user_controller import UserController
+from src.services.user_service import UserService
 
 # Initialize Flask app
 app = Flask(__name__)
+
+# Initialize persistent services and controllers
+user_service = UserService()
+# We don't need to instantiate the UserController here anymore
+# user_controller = UserController(user_service=user_service)
+
+# Register blueprints (user_bp will now use the persistent controller)
 app.register_blueprint(wallet_bp, url_prefix='/api')
 app.register_blueprint(coins_api)
+
+# Use the blueprint factory function to create and register the user blueprint
+user_bp = create_user_blueprint(user_service)
 app.register_blueprint(user_bp, url_prefix='/api')
 
 # Telegram bot command handler

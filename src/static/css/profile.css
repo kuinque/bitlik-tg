@@ -1,0 +1,66 @@
+.container {
+    max-width: 420px; /* Similar to segmented control max-width */
+    margin: 40px auto; /* Add top margin and center */
+    padding: 0 20px; /* Add horizontal padding */
+    color: var(--tg-theme-text-color); /* Use theme color */
+    text-align: center;
+}
+
+body {
+    background-color: #181A20; /* Set background to match Wallet page */
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #FFFFFF !important; /* Set heading color to white for maximum contrast, important */
+}
+
+.profile-info {
+    background: #23242a; /* Similar background to other cards */
+    border-radius: 28px; /* Increased border radius for more prominent card look */
+    padding: 32px 24px; /* Adjusted padding */
+    margin: 24px auto; /* Adjusted margin for better vertical spacing and centering */
+    box-shadow: 0 4px 24px rgba(36,129,204,0.10); /* More pronounced shadow */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.avatar {
+    width: 80px; /* Larger avatar size */
+    height: 80px;
+    border-radius: 50%; /* Make it round */
+    object-fit: cover;
+    margin-bottom: 20px;
+    border: 4px solid var(--primary-color); /* Accent border */
+}
+
+.profile-info p {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #FFFFFF !important; /* Set label color to white for maximum contrast, important */
+}
+
+.profile-info p span {
+    font-weight: 600;
+    color: #FFFFFF !important; /* Set value color to white for maximum contrast, important */
+}
+
+.profile-info p span#user-id {
+    font-weight: 400; /* Less emphasis on ID */
+    font-size: 16px; /* Increased font size for better readability */
+}
+
+a {
+    color: var(--tg-theme-link-color); /* Theme link color */
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+a:hover {
+    opacity: 0.8;
+} 
