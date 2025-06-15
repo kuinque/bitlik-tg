@@ -345,43 +345,66 @@ function renderEarnTab() {
     mainContent.innerHTML = `
         <div class="page-content">
             <h2>Liquid Pools</h2>
-            <div class="liquid-pools-list" id="liquid-pools-list">Loading liquid pools...</div> {# Add ID and loading text #}
+            <div class="liquid-pools-list" id="liquid-pools-list"></div>
         </div>
     `;
 
-    // Fetch and display liquid pools
-    fetch('/api/liquid_pools')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(liquidPools => {
-            const liquidPoolsListDiv = document.getElementById('liquid-pools-list');
-            if (!liquidPools || liquidPools.length === 0) {
-                liquidPoolsListDiv.innerHTML = '<div class="empty-state">No liquid pools available.</div>';
-                return;
-            }
+    // Hardcoded sample liquid pool data
+    const liquidPools = [
+        {
+            name: 'USDT/RUB Pool',
+            description: 'Stable liquidity pool for USDT and RUB trading pair',
+            apy: '12.5%',
+            tokens: ['USDT', 'RUB'],
+            tvl: '$1.2M',
+            volume24h: '$450K'
+        },
+        {
+            name: 'BTC/RUB Pool',
+            description: 'High-yield pool for Bitcoin and Ruble trading',
+            apy: '8.3%',
+            tokens: ['BTC', 'RUB'],
+            tvl: '$2.5M',
+            volume24h: '$780K'
+        },
+        {
+            name: 'ETH/RUB Pool',
+            description: 'Ethereum liquidity pool with competitive rates',
+            apy: '9.7%',
+            tokens: ['ETH', 'RUB'],
+            tvl: '$1.8M',
+            volume24h: '$620K'
+        }
+    ];
 
-            // Generate HTML for each liquid pool
-            const poolsHtml = liquidPools.map(pool => `
-                <div class="liquid-pool-item">
-                    <h3>${pool.name}</h3>
-                    <p>${pool.description}</p>
-                    <p>APY: ${pool.apy}</p>
-                    <p>Tokens: ${pool.tokens.join(', ')}</p>
-                    {# Add a button or link for interacting with the pool later #}
+    const liquidPoolsListDiv = document.getElementById('liquid-pools-list');
+    
+    // Generate HTML for each liquid pool using the structure from earn.css
+    const poolsHtml = liquidPools.map(pool => `
+        <div class="liquid-pool-item">
+            <div class="pool-header">
+                <h3>${pool.name}</h3>
+                <span class="pool-apy">${pool.apy} APY</span>
+            </div>
+            <p class="pool-description">${pool.description}</p>
+            <div class="pool-stats">
+                <div class="pool-stat">
+                    <span class="stat-label">TVL</span>
+                    <span class="stat-value">${pool.tvl}</span>
                 </div>
-            `).join('');
+                <div class="pool-stat">
+                    <span class="stat-label">24h Volume</span>
+                    <span class="stat-value">${pool.volume24h}</span>
+                </div>
+            </div>
+            <div class="pool-tokens">
+                ${pool.tokens.map(token => `<span class="token-badge">${token}</span>`).join('')}
+            </div>
+            <button class="pool-action-button">Provide Liquidity</button>
+        </div>
+    `).join('');
 
-            liquidPoolsListDiv.innerHTML = poolsHtml;
-        })
-        .catch(error => {
-            console.error('Error fetching liquid pools:', error);
-            const liquidPoolsListDiv = document.getElementById('liquid-pools-list');
-            liquidPoolsListDiv.innerHTML = '<div class="error-state">Failed to load liquid pools.</div>';
-        });
+    liquidPoolsListDiv.innerHTML = poolsHtml;
 }
 
 function renderTradeTab() {
